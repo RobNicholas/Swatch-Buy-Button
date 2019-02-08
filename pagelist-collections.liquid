@@ -1,0 +1,108 @@
+{% comment %}
+  Collections are listed here.
+{% endcomment %}
+
+{% capture uses_minimal_framework %}{% include 'product-loop' %}{% endcapture %}
+
+{% if uses_minimal_framework contains 'Liquid error' %}
+  {% assign uses_minimal_framework = false %}  
+{% else %}
+  {% assign uses_minimal_framework = true %}
+  {% assign grid_item_width = 'span3' %}
+{% endif %}
+
+{% assign image_size = 'large' %}
+
+{% if linklists[page.handle].links.size > 0 %}
+    
+  {% assign number_of_links = 0 %}
+
+
+
+
+
+
+
+
+
+  <div class="grid-uniform{% if uses_minimal_framework %} row{% endif %} clearfix">        
+      <center>
+        <table>
+    {%tablerow link in linklists[page.handle].links cols:2%}        
+      {% if link.type == 'collection_link' %}  
+        {% assign collection = link.object %}
+        {% assign number_of_links = number_of_links | plus: 1 %}
+        <div class="grid__item grid-item product-grid-item text-center">
+          <div class="grid__image product-grid-image">
+            <a href="{{ link.url }}" class="grid-image--centered">
+            {% comment %}
+              Bring in the featured image of the first product in the collection if no collection
+              image has been uploaded for it.
+            {% endcomment %}
+            {% if collection.image %}
+              <img src="{{ collection | img_url: image_size }}" alt="{{ link.title | escape }}">
+            {% else %}
+              {% assign product = collection.products.first %}
+              <img src="{{ product | img_url: image_size }}" alt="{{ link.title | escape }}">
+            {% endif %}
+            </a>
+          </div>
+          <center>
+          <p class="collection-grid__item-title">
+            <a href="{{ link.url }}" class="collection-item__title">{{ link.title }}</a>
+          </p>          
+          <p class="collection-grid__item-description">
+             <span id=“truncated”> {{ collection.description | truncatewords: 10, “Read More” }}</span>
+          </p>
+            </center>
+        </div>
+        {% if uses_minimal_framework %}
+          {% cycle 'clear-item': '', '', '', '<div style="clear:both"></div>' %}
+        {% endif %}
+      {% endif %}
+    {% endtablerow %}
+        </table>
+    </center>
+  </div>
+    
+
+
+
+
+  {% if number_of_links == 0 %}
+
+  <div class="grid">
+    <div class="grid__item grid-item rte text-center">
+      <p>
+        There are no links of type <i>Collection</i> in your <b>{{ page.title }}</b> link list.
+        Go ahead and <a href="/admin/link_lists/{{ linklists[page.handle].id }}" target="_blank">edit your link list</a> to use links that point to collections.
+      </p>
+    </div>
+  </div>
+
+  {% endif %}
+
+{% else %}
+
+<div class="grid">
+  <div class="grid__item grid-item rte text-center">
+    <p>
+      <br><center><b>Comming Soon!</b></center>
+      {% comment %}
+      You do not have a link list with a handle set to <kbd>{{ page.handle }}</kbd>, or you do and it's empty. 
+      Go ahead and create a link list called <b>{{ page.title }}</b> on your <a href="/admin/links" target="_blank">Navigation page</a> and populate that link list with links that point to collections, to see collections listed here.
+      Make sure the link list also has a handle set to <kbd>{{ page.handle }}</kbd>.
+      {% endcomment %}
+    </p>
+  </div>
+</div>
+
+{% endif %}
+
+<style>
+  kbd { 
+    background-color: #FBFBE4;
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+</style>
